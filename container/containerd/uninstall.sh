@@ -36,9 +36,9 @@ uninstall::remove() {
 uninstall::file() {
 	rm -rf /etc/docker
 	rm -rf /etc/containerd
-	rm -rf /usr/bin/docker*
-	rm -rf /usr/local/sbin/containerd*
-	rm -f /usr/local/sbin/ctr /usr/local/sbin/crictl
+	rm -f /usr/bin/docker*
+	rm -f /usr/local/sbin/containerd*
+        rm -f /usr/local/sbin/ctr /usr/local/sbin/crictl
 }
 
 uninstall::main() {

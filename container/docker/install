@@ -15,6 +15,14 @@ source ${EXEC_DIR}/uninstall.sh
 
 mkdir -p $BIN_DIR $SYSTEMD_DIR $ETC_DOCKER_DIR $ETC_CONTAINER_DIR
 
+if [ "tlinux" == "$OS_RELEASE" ]; then
+  if rpm -q libseccomp >/dev/null 2>&1; then
+     echo "libseccomp already installed"
+  else
+      yum install -y libseccomp
+  fi
+fi
+
 if [ "ubuntu" == ${OS_RELEASE} ]; then
    ln -s /lib/x86_64-linux-gnu/libdevmapper.so.1.02.1 /lib/x86_64-linux-gnu/libdevmapper.so.1.02 || true
    apt-get install libseccomp2 || true
@@ -27,23 +35,33 @@ cp -a $EXEC_DIR/bin/* $BIN_DIR/
 cp $EXEC_DIR/conf/docker.service $SYSTEMD_DIR/docker.service
 cp $EXEC_DIR/conf/containerd.service $SYSTEMD_DIR/containerd.service
 
+#######################
+## prepare daemon.json
+#######################
+
 OS_PATCHED=$EXEC_DIR/conf/os-patched.json
 SVR_PATCHED=$EXEC_DIR/conf/svr-patched.json
 
+# tlinux
+if [ "tlinux" == "$OS_RELEASE" ]; then
+    sed -i '/.*"bip".*/d' $EXEC_DIR/conf/default.json
+sed -i 's/.*"bridge".*/  "bridge": "none",/' $EXEC_DIR/conf/default.json
+fi
+
 ## aufs storage-driver patch, only apply for ubuntu 16.04, use overlay2 for ubuntu 18.04
 if [ "ubuntu" == "$OS_RELEASE" ] && [ "16.04" == "$OS_VERSION" ]; then
-  $EXEC_DIR/util/conf-patch -o $EXEC_DIR/conf/default.json -p $EXEC_DIR/conf/aufs.patch.json > $OS_PATCHED
+$EXEC_DIR/util/conf-patch -o $EXEC_DIR/conf/default.json -p $EXEC_DIR/conf/aufs.patch.json > $OS_PATCHED
 else
-  cp $EXEC_DIR/conf/default.json $OS_PATCHED
+cp $EXEC_DIR/conf/default.json $OS_PATCHED
 fi
 
 if [ -f $EXEC_DIR/conf/patch.json ]
 then
-  echo "patch for daemon.json found, patch it"
-  $EXEC_DIR/util/conf-patch -o $OS_PATCHED -p $EXEC_DIR/conf/patch.json > $SVR_PATCHED
+echo "patch for daemon.json found, patch it"
+$EXEC_DIR/util/conf-patch -o $OS_PATCHED -p $EXEC_DIR/conf/patch.json > $SVR_PATCHED
 else
-  echo "patch for daemon.json not found"
-  cp $OS_PATCHED $SVR_PATCHED
+echo "patch for daemon.json not found"
+cp $OS_PATCHED $SVR_PATCHED
 fi
 
 cp $SVR_PATCHED $ETC_DOCKER_DIR/daemon.json

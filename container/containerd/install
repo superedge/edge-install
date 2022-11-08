@@ -33,7 +33,7 @@ else
 fi
 
 # copy binaries
-cp $EXEC_DIR/containerd $EXEC_DIR/containerd-shim $EXEC_DIR/containerd-shim-runc-v1 $EXEC_DIR/containerd-shim-runc-v2  $EXEC_DIR/ctr /usr/local/sbin/
+cp $EXEC_DIR/containerd $EXEC_DIR/containerd-shim $EXEC_DIR/containerd-shim-runc-v1 $EXEC_DIR/containerd-shim-runc-v2  $EXEC_DIR/containerd-stress $EXEC_DIR/ctr /usr/local/sbin/
 
 cp $EXEC_DIR/runc /usr/local/sbin/runc
 
