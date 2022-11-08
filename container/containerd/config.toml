@@ -1,0 +1,40 @@
+# persistent data location
+root = "/var/lib/containerd"
+# runtime state information
+state = "/run/containerd"
+# set containerd as a subreaper on linux when it is not running as PID 1
+subreaper = true
+# set containerd's OOM score
+oom_score = -999
+
+# Kubernetes doesn't use containerd restart manager.
+disabled_plugins = ["restart"]
+
+[debug]
+  level = "debug"
+  address = "/run/containerd/debug.sock"
+
+[plugins.cri]
+  # only works with k8s 1.11 and upper 
+  stream_server_address = "127.0.0.1"
+  stream_server_port = "0"
+  enable_selinux = false
+  sandbox_image = "ccr.ccs.tencentyun.com/library/pause"
+  enable_tls_streaming = false
+  max_concurrent_downloads = 10
+
+  [plugins.cri.containerd]
+        default_runtime_name = "runc"
+    [plugins.cri.containerd.runtimes.runc]
+      runtime_type = "io.containerd.runc.v2"
+      pod_annotations = []
+      container_annotations = []
+      privileged_without_host_devices = false
+      [plugins.cri.containerd.runtimes.runc.options]
+        BinaryName = "runc"
+  # cni
+  [plugins.cri.cni]
+    bin_dir = "/opt/cni/bin"
+    conf_dir = "/etc/cni/net.d"
+    conf_template = ""
+

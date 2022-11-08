@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# need root
+
+set -e
+
+# declare
+EXEC_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+source ${EXEC_DIR}/uninstall.sh
+
+# uninstall
+uninstall::main
+
+export OS_RELEASE="$(. /etc/os-release && echo "$ID")"
+export OS_VERSION="$(. /etc/os-release && echo "$VERSION_ID")"
+
+if [ "ubuntu" = "${OS_RELEASE}" -a "16.04" = "$OS_VERSION" ]; then
+	apt-get install libseccomp2
+fi
+
+# make containerd config folder.
+mkdir -p /etc/containerd
+
+# patch the config (if patch.json exist)
+if [ -f "$EXEC_DIR/patch.json" ] ; then
+	$EXEC_DIR/conf-patch -o $EXEC_DIR/config.toml -p $EXEC_DIR/patch.json > $EXEC_DIR/patched-config.toml
+	# copy config.toml
+	cp $EXEC_DIR/patched-config.toml /etc/containerd/config.toml
+else
+	# copy default config.toml
+	cp $EXEC_DIR/config.toml /etc/containerd/config.toml
+fi
+
+# copy binaries
+cp $EXEC_DIR/containerd $EXEC_DIR/containerd-shim $EXEC_DIR/containerd-shim-runc-v1 $EXEC_DIR/containerd-shim-runc-v2  $EXEC_DIR/ctr /usr/local/sbin/
+
+cp $EXEC_DIR/runc /usr/local/sbin/runc
+
+# copy containerd.service
+cp $EXEC_DIR/containerd.service /etc/systemd/system/containerd.service
+
+# install cri-tools
+cp $EXEC_DIR/crictl /usr/local/sbin/
+cp $EXEC_DIR/crictl.yaml /etc/crictl.yaml
+
+systemctl daemon-reload
+systemctl start containerd.service
+systemctl enable containerd.service

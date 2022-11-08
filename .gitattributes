@@ -1,0 +1,5 @@
+*.psd filter=lfs diff=lfs merge=lfs -text
+bin/kubelet filter=lfs diff=lfs merge=lfs -text
+bin/lite-apiserver filter=lfs diff=lfs merge=lfs -text
+container/docker/bin/docker filter=lfs diff=lfs merge=lfs -text
+container/docker/bin/dockerd filter=lfs diff=lfs merge=lfs -text
