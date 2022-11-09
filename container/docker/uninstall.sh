@@ -18,10 +18,8 @@ remove() {
 	esac 
 
 	# (centos7.2, ubuntu16.04)         => hook
-	# (tlinux, centos7.6, ubuntu18.04) => toolkit
 	local nvidia_pkgs="nvidia-docker2" # nvidia-container-runtime nvidia-container-runtime-hook nvidia-container-toolkit libnvidia-container-tools libnvidia-container1"
 	# (centos7.2, ubuntu16.04)         => docker-ce
-	# (tlinux, centos7.6, ubuntu18.04) => all
 	local runtime_pkgs="docker-ce docker-ce-cli containerd.io"
 
 	for pkg in $nvidia_pkgs; do

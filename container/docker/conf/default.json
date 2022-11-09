@@ -3,7 +3,7 @@
   "hosts": ["unix:///var/run/docker.sock"],
   "log-driver": "json-file",
   "log-opts": {"max-size": "100m","max-file": "10"},
-  "registry-mirrors": [""],
+  "registry-mirrors": [],
   "iptables": true,
   "ipv6": false,
   "ip-forward": true,
