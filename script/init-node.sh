@@ -89,25 +89,43 @@ set_sysctl() {
 }
 
 load_kernel() {
-	if ! [ -d /etc/sysconfig/modules/ ]; then
-		mkdir -p /etc/sysconfig/modules
-	fi
-	cat <<-EOF >/etc/sysconfig/modules/ipvs.modules
-	modprobe -- iptable_nat
-	modprobe -- ip_vs
-	modprobe -- ip_vs_sh
-	modprobe -- ip_vs_rr
-	modprobe -- ip_vs_wrr
-	modprobe -- nf_conntrack_ipv4
-	EOF
+	if [ "ubuntu" == ${OS_RELEASE} ]; then
 
-	if modinfo br_netfilter > /dev/null; then
-		echo "modprobe -- br_netfilter" >> /etc/sysconfig/modules/ipvs.modules
-	fi
+		echo "br_netfilter" >> /etc/modules-load.d/modules.conf
+		echo "iptable_nat" >> /etc/modules-load.d/modules.conf
+		echo "ip_vs" >> /etc/modules-load.d/modules.conf
+		echo "ip_vs_sh" >> /etc/modules-load.d/modules.conf
+		echo "ip_vs_rr" >> /etc/modules-load.d/modules.conf
+		echo "ip_vs_wrr" >> /etc/modules-load.d/modules.conf
+		echo "nf_conntrack_ipv4" >> /etc/modules-load.d/modules.conf
+		modprobe br_netfilter
+		modprobe iptable_nat
+		modprobe ip_vs
+		modprobe ip_vs_sh
+		modprobe ip_vs_rr
+		modprobe ip_vs_wrr
 
-	chmod 755 /etc/sysconfig/modules/ipvs.modules &&
-		source /etc/sysconfig/modules/ipvs.modules &&
-		lsmod | grep -e ip_vs -e nf_conntrack_ipv4
+        else	
+		if ! [ -d /etc/sysconfig/modules/ ]; then
+			mkdir -p /etc/sysconfig/modules
+		fi
+		cat <<-EOF >/etc/sysconfig/modules/ipvs.modules
+		modprobe -- iptable_nat
+		modprobe -- ip_vs
+		modprobe -- ip_vs_sh
+		modprobe -- ip_vs_rr
+		modprobe -- ip_vs_wrr
+		modprobe -- nf_conntrack_ipv4
+		EOF
+
+		if modinfo br_netfilter > /dev/null; then
+			echo "modprobe -- br_netfilter" >> /etc/sysconfig/modules/ipvs.modules
+		fi
+
+		chmod 755 /etc/sysconfig/modules/ipvs.modules &&
+			source /etc/sysconfig/modules/ipvs.modules &&
+			lsmod | grep -e ip_vs -e nf_conntrack_ipv4
+	fi
 }
 
 main() {
