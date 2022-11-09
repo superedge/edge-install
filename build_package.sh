@@ -1,8 +1,8 @@
 #!/usr/bin
 
-DOCKER_VERSION="docker-19.03-linux-arm64.tgz"
-CONTAINERD_VERSION="containerd-1.3.4-linux-arm64.tgz"
-KUBE_VERSION="kube-linux-arm64-v1.22.6.tar.gz"
+DOCKER_VERSION="docker-19.03-linux-amd64.tgz"
+CONTAINERD_VERSION="containerd-1.4.3-linux-amd64.tgz"
+KUBE_VERSION="kube-linux-arm64-v1.20.6.tar.gz"
 
 WORKDIR=`pwd`
 cd edge-install/container/
