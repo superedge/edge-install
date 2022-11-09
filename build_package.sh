@@ -1,7 +1,7 @@
 #!/usr/bin
 
 DOCKER_VERSION="docker-19.03-linux-amd64.tgz"
-CONTAINERD_VERSION="containerd-1.3.4-linux-amd64.tgz"
+CONTAINERD_VERSION="containerd-1.4.3-linux-amd64.tgz"
 KUBE_VERSION="kube-linux-amd64-v1.22.6.tar.gz"
 
 WORKDIR=`pwd`
